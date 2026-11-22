@@ -30,17 +30,29 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        $request->merge([
+            'nim' => strtoupper(trim((string) $request->nim)),
         ]);
 
-        $user = User::create([
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'nim' => ['required', 'string', 'regex:/^[A-Z][0-9]{9}$/', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'nim.required' => 'NIM wajib diisi.',
+            'nim.regex' => 'Format NIM tidak valid. Contoh: D121241087.',
+            'nim.unique' => 'NIM ini sudah terdaftar.',
+        ]);
+
+        $user = new User([
             'name' => $request->name,
+            'nim' => $request->nim,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        $user->peran = User::PERAN_MAHASISWA;
+        $user->save();
 
         event(new Registered($user));
 

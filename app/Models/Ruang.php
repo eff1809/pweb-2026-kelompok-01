@@ -2,19 +2,22 @@
 
 namespace App\Models;
 
+use Database\Factories\RuangFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Ruang extends Model
 {
-    /** @use HasFactory<\Database\Factories\RuangFactory> */
+    /** @use HasFactory<RuangFactory> */
     use HasFactory;
 
     // Nama tabel bahasa Indonesia tunggal; tanpa ini Laravel mencari "ruangs".
     protected $table = 'ruang';
 
     public const STATUS_TERSEDIA = 'tersedia';
+
     public const STATUS_PERBAIKAN = 'perbaikan';
+
     public const STATUS_NONAKTIF = 'nonaktif';
 
     /** Pilihan status untuk form dan filter: nilai => label. */

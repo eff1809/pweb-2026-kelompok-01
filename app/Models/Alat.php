@@ -2,19 +2,22 @@
 
 namespace App\Models;
 
+use Database\Factories\AlatFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Alat extends Model
 {
-    /** @use HasFactory<\Database\Factories\AlatFactory> */
+    /** @use HasFactory<AlatFactory> */
     use HasFactory;
 
     // Nama tabel bahasa Indonesia tunggal; tanpa ini Laravel mencari "alats".
     protected $table = 'alat';
 
     public const KONDISI_BAIK = 'baik';
+
     public const KONDISI_RUSAK_RINGAN = 'rusak_ringan';
+
     public const KONDISI_RUSAK_BERAT = 'rusak_berat';
 
     /** Pilihan kondisi untuk form dan filter: nilai => label. */

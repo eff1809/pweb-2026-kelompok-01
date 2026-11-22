@@ -17,4 +17,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Halaman khusus Admin Lab
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        // CRUD ruang dan alat (Fauzan), persetujuan peminjaman, laporan PDF
+    });
+
+// Halaman khusus Mahasiswa
+Route::middleware(['auth', 'role:mahasiswa'])
+    ->group(function () {
+        // Pengajuan peminjaman dan riwayat
+    });
+
 require __DIR__.'/auth.php';

@@ -11,6 +11,8 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+    public const PERAN_ADMIN = 'admin';
+    public const PERAN_MAHASISWA = 'mahasiswa';
 
     /**
      * The attributes that are mass assignable.
@@ -20,6 +22,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'nim',
         'password',
     ];
 
@@ -44,5 +47,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->peran === self::PERAN_ADMIN;
+    }
+
+    public function isMahasiswa(): bool
+    {
+        return $this->peran === self::PERAN_MAHASISWA;
     }
 }

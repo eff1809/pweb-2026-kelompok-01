@@ -50,6 +50,8 @@ Route::middleware(['auth', 'role:admin'])
         Route::patch('/peminjaman/{peminjaman}/kembalikan', [Admin\PeminjamanController::class, 'kembalikan'])->name('peminjaman.kembalikan');
 
         // Laporan PDF
+        Route::get('/laporan/peminjaman/pdf', [Admin\LaporanPeminjamanController::class, 'pdf'])
+            ->name('laporan.peminjaman.pdf');
     });
 
 // Halaman khusus Mahasiswa

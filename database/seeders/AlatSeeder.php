@@ -9,7 +9,7 @@ class AlatSeeder extends Seeder
 {
     public function run(): void
     {
-        // [kategori, kode, nama, jumlah_total (unit layak pinjam), kondisi]
+        // [kategori, kode, nama, jumlah_total, kondisi]
         $alat = [
             ['Mikrokontroler & IoT', 'MCU-001', 'Arduino Uno R3', 15, 'baik'],
             ['Mikrokontroler & IoT', 'MCU-002', 'ESP32 DevKit V1', 12, 'baik'],
@@ -30,8 +30,7 @@ class AlatSeeder extends Seeder
             ['Perangkat Presentasi', 'PRS-002', 'Layar Proyektor Portabel', 2, 'baik'],
 
             ['Komputer & Aksesori', 'KOM-001', 'Laptop Praktikum', 10, 'baik'],
-            // Rusak berat: tidak ada unit yang layak pinjam (jumlah_total = 0)
-            ['Komputer & Aksesori', 'KOM-002', 'Webcam Eksternal', 0, 'rusak_berat'],
+            ['Komputer & Aksesori', 'KOM-002', 'Webcam Eksternal', 2, 'rusak_berat'],
         ];
 
         $rows = [];

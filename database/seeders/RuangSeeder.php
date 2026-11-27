@@ -34,7 +34,7 @@ class RuangSeeder extends Seeder
         foreach ($ruang as [$nama, $lantai, $kapasitas, $deskripsi, $status]) {
             $rows[] = [
                 'nama' => $nama,
-                'lokasi' => $lokasi . $lantai,
+                'lokasi' => $lokasi.$lantai,
                 'kapasitas' => $kapasitas,
                 'deskripsi' => $deskripsi,
                 'foto' => null,

@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\RuangFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ruang extends Model
 {
@@ -51,5 +52,10 @@ class Ruang extends Model
     public function labelStatus(): string
     {
         return self::DAFTAR_STATUS[$this->status] ?? $this->status;
+    }
+
+    public function peminjaman(): HasMany
+    {
+        return $this->hasMany(Peminjaman::class);
     }
 }

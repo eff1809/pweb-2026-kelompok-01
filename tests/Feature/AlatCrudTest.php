@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Alat;
+use App\Models\Peminjaman;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\View;
@@ -115,6 +116,69 @@ class AlatCrudTest extends TestCase
 
         $response->assertRedirect(route('admin.alat.index'))->assertSessionHas('success');
         $this->assertModelMissing($alat);
+    }
+
+    /** Pasang alat ke sebuah peminjaman dengan status dan jumlah tertentu. */
+    private function pinjamkan(Alat $alat, int $jumlah, string $state): Peminjaman
+    {
+        $peminjaman = Peminjaman::factory()->{$state}()->create(['ruang_id' => null]);
+        $peminjaman->alat()->attach($alat->id, ['jumlah' => $jumlah]);
+
+        return $peminjaman;
+    }
+
+    public function test_alat_dengan_riwayat_peminjaman_tidak_dapat_dihapus(): void
+    {
+        $alat = Alat::factory()->create();
+        $this->pinjamkan($alat, 1, 'dikembalikan');
+
+        $response = $this->actingAs($this->admin)->delete(route('admin.alat.destroy', $alat));
+
+        $response->assertRedirect(route('admin.alat.index'))
+            ->assertSessionHas('error')
+            ->assertSessionMissing('success');
+        $this->assertModelExists($alat);
+    }
+
+    public function test_jumlah_alat_tidak_boleh_kurang_dari_unit_yang_sedang_dipinjam(): void
+    {
+        $alat = Alat::factory()->create(['kode' => 'PRJ-001', 'jumlah_total' => 5]);
+        $this->pinjamkan($alat, 3, 'dipinjam');
+
+        $response = $this->actingAs($this->admin)
+            ->from(route('admin.alat.edit', $alat))
+            ->put(route('admin.alat.update', $alat), $this->dataValid(['jumlah_total' => 2]));
+
+        $response->assertRedirect(route('admin.alat.edit', $alat))
+            ->assertSessionHasErrors([
+                'jumlah_total' => 'Jumlah tidak boleh kurang dari unit yang sedang dipinjam (3 unit).',
+            ]);
+        $this->assertSame(5, $alat->fresh()->jumlah_total);
+    }
+
+    public function test_jumlah_alat_boleh_sama_dengan_unit_yang_sedang_dipinjam(): void
+    {
+        $alat = Alat::factory()->create(['kode' => 'PRJ-001', 'jumlah_total' => 5]);
+        $this->pinjamkan($alat, 3, 'dipinjam');
+
+        $response = $this->actingAs($this->admin)
+            ->put(route('admin.alat.update', $alat), $this->dataValid(['jumlah_total' => 3]));
+
+        $response->assertRedirect(route('admin.alat.index'))->assertSessionHasNoErrors();
+        $this->assertSame(3, $alat->fresh()->jumlah_total);
+    }
+
+    public function test_unit_berstatus_selain_dipinjam_tidak_menghalangi_pengurangan_jumlah(): void
+    {
+        $alat = Alat::factory()->create(['kode' => 'PRJ-001', 'jumlah_total' => 5]);
+        $this->pinjamkan($alat, 4, 'dikembalikan');
+        $this->pinjamkan($alat, 4, 'disetujui');
+
+        $response = $this->actingAs($this->admin)
+            ->put(route('admin.alat.update', $alat), $this->dataValid(['jumlah_total' => 1]));
+
+        $response->assertRedirect(route('admin.alat.index'))->assertSessionHasNoErrors();
+        $this->assertSame(1, $alat->fresh()->jumlah_total);
     }
 
     public function test_mahasiswa_tidak_dapat_mengakses_crud_alat(): void

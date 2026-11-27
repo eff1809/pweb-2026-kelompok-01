@@ -60,4 +60,12 @@ class Alat extends Model
         return $this->belongsToMany(Peminjaman::class, 'peminjaman_alat')
             ->withPivot('jumlah');
     }
+
+    /** Jumlah unit alat ini yang sedang berstatus dipinjam (aturan A5). */
+    public function jumlahSedangDipinjam(): int
+    {
+        return (int) $this->peminjaman()
+            ->where('peminjaman.status', Peminjaman::STATUS_DIPINJAM)
+            ->sum('peminjaman_alat.jumlah');
+    }
 }

@@ -63,7 +63,13 @@ class RuangController extends Controller
 
     public function destroy(Ruang $ruang): RedirectResponse
     {
-        // TODO (setelah tabel peminjaman ada): tolak penghapusan jika ruang punya riwayat peminjaman (aturan R3).
+        // Aturan R3: ruang yang punya riwayat peminjaman tidak boleh dihapus; Admin menonaktifkannya.
+        if ($ruang->peminjaman()->exists()) {
+            return redirect()
+                ->route('admin.ruang.index')
+                ->with('error', "Ruang {$ruang->nama} tidak dapat dihapus karena memiliki riwayat peminjaman. Ubah statusnya menjadi Nonaktif.");
+        }
+
         $ruang->delete();
 
         return redirect()

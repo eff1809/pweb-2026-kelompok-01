@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Peminjaman;
 use App\Models\Ruang;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -124,6 +125,19 @@ class RuangCrudTest extends TestCase
 
         $response->assertRedirect(route('admin.ruang.index'))->assertSessionHas('success');
         $this->assertModelMissing($ruang);
+    }
+
+    public function test_ruang_dengan_riwayat_peminjaman_tidak_dapat_dihapus(): void
+    {
+        $ruang = Ruang::factory()->create();
+        Peminjaman::factory()->dikembalikan()->create(['ruang_id' => $ruang->id]);
+
+        $response = $this->actingAs($this->admin)->delete(route('admin.ruang.destroy', $ruang));
+
+        $response->assertRedirect(route('admin.ruang.index'))
+            ->assertSessionHas('error')
+            ->assertSessionMissing('success');
+        $this->assertModelExists($ruang);
     }
 
     public function test_mahasiswa_tidak_dapat_mengakses_crud_ruang(): void

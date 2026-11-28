@@ -146,7 +146,7 @@
                             <div>
                                 <label for="register_nim" class="block text-xs font-semibold text-white">NIM</label>
                                 <input id="register_nim" type="text" name="nim" value="{{ $old('nim', 'register') }}"
-                                       placeholder="Masukkan NIM" maxlength="10" required
+                                       placeholder="Contoh: D121241087" maxlength="10" required
                                        class="{{ $inputClass }}">
                                 @if ($message = $error('nim', 'register'))
                                     <p class="mt-1 text-xs text-red-300">{{ $message }}</p>

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Concerns\MembacaFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AlatRequest;
 use App\Models\Alat;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
@@ -13,12 +15,30 @@ use Illuminate\View\View;
  */
 class AlatController extends Controller
 {
-    public function index(): View
+    use MembacaFilter;
+
+    public function index(Request $request): View
     {
-        $alat = Alat::orderBy('nama')->paginate(10);
+        $daftarKategori = Alat::daftarKategori();
+
+        $filter = [
+            'q' => $this->teksFilter($request, 'q'),
+            'kategori' => $this->pilihanFilter($request, 'kategori', $daftarKategori),
+            'kondisi' => $this->pilihanFilter($request, 'kondisi', array_keys(Alat::DAFTAR_KONDISI)),
+        ];
+
+        $alat = Alat::query()
+            ->cari($filter['q'])
+            ->when($filter['kategori'], fn ($query, $kategori) => $query->where('kategori', $kategori))
+            ->when($filter['kondisi'], fn ($query, $kondisi) => $query->where('kondisi', $kondisi))
+            ->orderBy('nama')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('admin.alat.index', [
             'alat' => $alat,
+            'filter' => $filter,
+            'daftarKategori' => $daftarKategori,
             'daftarKondisi' => Alat::DAFTAR_KONDISI,
         ]);
     }
@@ -27,7 +47,7 @@ class AlatController extends Controller
     {
         return view('admin.alat.create', [
             'daftarKondisi' => Alat::DAFTAR_KONDISI,
-            'daftarKategori' => $this->daftarKategori(),
+            'daftarKategori' => Alat::daftarKategori(),
         ]);
     }
 
@@ -50,7 +70,7 @@ class AlatController extends Controller
         return view('admin.alat.edit', [
             'alat' => $alat,
             'daftarKondisi' => Alat::DAFTAR_KONDISI,
-            'daftarKategori' => $this->daftarKategori(),
+            'daftarKategori' => Alat::daftarKategori(),
         ]);
     }
 
@@ -78,11 +98,5 @@ class AlatController extends Controller
         return redirect()
             ->route('admin.alat.index')
             ->with('success', "Alat {$alat->nama} ({$alat->kode}) berhasil dihapus.");
-    }
-
-    /** Kategori yang sudah dipakai, untuk saran isian (datalist) di form. */
-    private function daftarKategori(): array
-    {
-        return Alat::query()->distinct()->orderBy('kategori')->pluck('kategori')->all();
     }
 }

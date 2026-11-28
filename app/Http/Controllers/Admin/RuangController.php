@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Concerns\MembacaFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RuangRequest;
 use App\Models\Ruang;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
@@ -13,12 +15,25 @@ use Illuminate\View\View;
  */
 class RuangController extends Controller
 {
-    public function index(): View
+    use MembacaFilter;
+
+    public function index(Request $request): View
     {
-        $ruang = Ruang::orderBy('nama')->paginate(10);
+        $filter = [
+            'q' => $this->teksFilter($request, 'q'),
+            'status' => $this->pilihanFilter($request, 'status', array_keys(Ruang::DAFTAR_STATUS)),
+        ];
+
+        $ruang = Ruang::query()
+            ->cari($filter['q'])
+            ->when($filter['status'], fn ($query, $status) => $query->where('status', $status))
+            ->orderBy('nama')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('admin.ruang.index', [
             'ruang' => $ruang,
+            'filter' => $filter,
             'daftarStatus' => Ruang::DAFTAR_STATUS,
         ]);
     }

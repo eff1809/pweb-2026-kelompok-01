@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\AlatFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -53,6 +54,25 @@ class Alat extends Model
     public function labelKondisi(): string
     {
         return self::DAFTAR_KONDISI[$this->kondisi] ?? $this->kondisi;
+    }
+
+    /** Pencarian `q` di nama dan kode alat; kata kosong tidak memfilter apa pun. */
+    public function scopeCari(Builder $query, ?string $kata): Builder
+    {
+        if ($kata === null || $kata === '') {
+            return $query;
+        }
+
+        return $query->where(function (Builder $sub) use ($kata): void {
+            $sub->where('nama', 'like', "%{$kata}%")
+                ->orWhere('kode', 'like', "%{$kata}%");
+        });
+    }
+
+    /** Kategori yang sudah dipakai, untuk pilihan filter dan saran isian form. */
+    public static function daftarKategori(): array
+    {
+        return static::query()->distinct()->orderBy('kategori')->pluck('kategori')->all();
     }
 
     public function peminjaman(): BelongsToMany

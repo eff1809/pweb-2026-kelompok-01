@@ -146,7 +146,7 @@ Saat menyetujui, cek bentrok dan stok diulang (P7). Jika gagal, persetujuan diba
 | Peminjaman (Admin) | `q`, `status`, `dari`, `sampai` | `q` mencari di nama/NIM mahasiswa dan keperluan |
 | Peminjaman (Mahasiswa) | `status` | hanya data milik sendiri |
 
-Pagination 10 data per halaman dengan `->paginate(10)->withQueryString()` agar filter tetap terbawa saat pindah halaman. Parameter yang tidak valid diabaikan, tidak memunculkan error.
+Pagination 10 data per halaman dengan `->paginate(10)->withQueryString()` agar filter tetap terbawa saat pindah halaman. Parameter yang tidak valid diabaikan, tidak memunculkan error. Isi kembali form filter dari `$filter` (nilainya `null` jika tidak dipakai), misalnya `value="{{ $filter['q'] }}"`, dan tampilkan link halaman dengan `{{ $ruang->links() }}`.
 
 ## 3. Modul CRUD dan Halaman
 
@@ -186,9 +186,9 @@ Mengikuti route di [backend-design.md](backend-design.md#usulan-route-utama). Ri
 
 | View | Variabel |
 |---|---|
-| `*/ruang/index` | `$ruang` (paginator), `$filter` (array `q`, `status`) |
+| `*/ruang/index` | `$ruang` (paginator), `$filter` (array `q`, `status`), `$daftarStatus` (pilihan filter; katalog tanpa `nonaktif`) |
 | `*/ruang/show`, `admin/ruang/edit` | `$ruang` (model) |
-| `*/alat/index` | `$alat` (paginator), `$kategori` (daftar kategori untuk filter), `$filter` |
+| `*/alat/index` | `$alat` (paginator), `$filter` (array `q`, `kategori`, `kondisi`), `$daftarKategori` (kategori yang sudah dipakai), `$daftarKondisi` |
 | `*/alat/show`, `admin/alat/edit` | `$alat` (model) |
 | Form peminjaman | `$ruang` (koleksi ruang `tersedia`), `$alat` (koleksi alat selain `rusak_berat`), `$peminjaman` (hanya saat ubah) |
 

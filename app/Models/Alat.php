@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\PunyaFoto;
 use Database\Factories\AlatFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Alat extends Model
 {
     /** @use HasFactory<AlatFactory> */
-    use HasFactory;
+    use HasFactory, PunyaFoto;
 
     // Nama tabel bahasa Indonesia tunggal; tanpa ini Laravel mencari "alats".
     protected $table = 'alat';

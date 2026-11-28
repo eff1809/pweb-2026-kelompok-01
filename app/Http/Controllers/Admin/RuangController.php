@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Concerns\KelolaFoto;
 use App\Http\Controllers\Concerns\MembacaFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RuangRequest;
@@ -15,7 +16,7 @@ use Illuminate\View\View;
  */
 class RuangController extends Controller
 {
-    use MembacaFilter;
+    use KelolaFoto, MembacaFilter;
 
     public function index(Request $request): View
     {
@@ -47,7 +48,7 @@ class RuangController extends Controller
 
     public function store(RuangRequest $request): RedirectResponse
     {
-        $ruang = Ruang::create($request->validated());
+        $ruang = Ruang::create($this->dataDenganFoto($request, 'ruang'));
 
         return redirect()
             ->route('admin.ruang.index')
@@ -69,7 +70,7 @@ class RuangController extends Controller
 
     public function update(RuangRequest $request, Ruang $ruang): RedirectResponse
     {
-        $ruang->update($request->validated());
+        $ruang->update($this->dataDenganFoto($request, 'ruang'));
 
         return redirect()
             ->route('admin.ruang.index')

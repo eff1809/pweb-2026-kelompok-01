@@ -194,6 +194,13 @@ Mengikuti route di [backend-design.md](backend-design.md#usulan-route-utama). Ri
 
 Foto disimpan di disk `public` (`storage/app/public/ruang`, `.../alat`) dan ditampilkan dengan `asset('storage/'.$ruang->foto)`; jika kosong, tampilkan gambar placeholder. Foto lama dihapus saat diganti atau saat data dihapus.
 
+Cara pakai di form tambah/ubah Ruang dan Alat (untuk Tri):
+
+- Form wajib memakai `enctype="multipart/form-data"`.
+- Pakai komponen `<x-input-foto />` (form tambah) atau `<x-input-foto :model="$ruang" />` / `:model="$alat"` (form ubah). Komponen ini sudah berisi pratinjau foto sebelum disimpan, pesan error, dan centang `hapus_foto` untuk menghapus foto lama.
+- Untuk menampilkan foto di daftar/detail, pakai `{{ $ruang->fotoUrl() }}`; jika foto kosong, hasilnya gambar `images/placeholder-foto.svg`.
+- Setelah clone, jalankan `php artisan storage:link` sekali agar foto bisa tampil.
+
 ## 4. Masukan untuk ERD (untuk Ainun)
 
 | No | Tabel | Masukan | Alasan |

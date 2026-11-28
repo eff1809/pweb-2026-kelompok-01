@@ -51,6 +51,8 @@ class AlatRequest extends FormRequest
                 },
             ],
             'kondisi' => ['required', Rule::in(array_keys(Alat::DAFTAR_KONDISI))],
+            'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'hapus_foto' => ['nullable', 'boolean'],
         ];
     }
 
@@ -66,6 +68,10 @@ class AlatRequest extends FormRequest
             'jumlah_total.min' => 'Jumlah alat minimal :min unit.',
             'jumlah_total.max' => 'Jumlah alat maksimal :max unit.',
             'kondisi.in' => 'Kondisi alat tidak valid.',
+            'foto.uploaded' => 'Foto gagal diunggah. Pastikan ukurannya maksimal 2 MB.',
+            'foto.image' => 'Foto harus berupa gambar JPG, PNG, atau WEBP.',
+            'foto.mimes' => 'Foto harus berupa gambar JPG, PNG, atau WEBP.',
+            'foto.max' => 'Ukuran foto maksimal 2 MB.',
         ];
     }
 
@@ -77,6 +83,7 @@ class AlatRequest extends FormRequest
             'kategori' => 'kategori',
             'jumlah_total' => 'jumlah alat',
             'kondisi' => 'kondisi',
+            'foto' => 'foto',
         ];
     }
 }

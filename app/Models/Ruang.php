@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\PunyaFoto;
 use Database\Factories\RuangFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Ruang extends Model
 {
     /** @use HasFactory<RuangFactory> */
-    use HasFactory;
+    use HasFactory, PunyaFoto;
 
     // Nama tabel bahasa Indonesia tunggal; tanpa ini Laravel mencari "ruangs".
     protected $table = 'ruang';

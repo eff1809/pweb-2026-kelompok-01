@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Concerns\KelolaFoto;
 use App\Http\Controllers\Concerns\MembacaFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AlatRequest;
@@ -15,7 +16,7 @@ use Illuminate\View\View;
  */
 class AlatController extends Controller
 {
-    use MembacaFilter;
+    use KelolaFoto, MembacaFilter;
 
     public function index(Request $request): View
     {
@@ -53,7 +54,7 @@ class AlatController extends Controller
 
     public function store(AlatRequest $request): RedirectResponse
     {
-        $alat = Alat::create($request->validated());
+        $alat = Alat::create($this->dataDenganFoto($request, 'alat'));
 
         return redirect()
             ->route('admin.alat.index')
@@ -77,7 +78,7 @@ class AlatController extends Controller
     public function update(AlatRequest $request, Alat $alat): RedirectResponse
     {
         // Aturan A5 (jumlah_total >= unit yang sedang dipinjam) divalidasi di AlatRequest.
-        $alat->update($request->validated());
+        $alat->update($this->dataDenganFoto($request, 'alat'));
 
         return redirect()
             ->route('admin.alat.index')

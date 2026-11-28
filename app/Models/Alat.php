@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\AlatFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Alat extends Model
 {
@@ -52,5 +53,11 @@ class Alat extends Model
     public function labelKondisi(): string
     {
         return self::DAFTAR_KONDISI[$this->kondisi] ?? $this->kondisi;
+    }
+
+    public function peminjaman(): BelongsToMany
+    {
+        return $this->belongsToMany(Peminjaman::class, 'peminjaman_alat')
+            ->withPivot('jumlah');
     }
 }

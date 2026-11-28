@@ -3,15 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
     public const PERAN_ADMIN = 'admin';
+
     public const PERAN_MAHASISWA = 'mahasiswa';
 
     /**
@@ -57,5 +61,10 @@ class User extends Authenticatable
     public function isMahasiswa(): bool
     {
         return $this->peran === self::PERAN_MAHASISWA;
+    }
+
+    public function peminjaman(): HasMany
+    {
+        return $this->hasMany(Peminjaman::class);
     }
 }

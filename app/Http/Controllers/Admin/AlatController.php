@@ -56,7 +56,7 @@ class AlatController extends Controller
 
     public function update(AlatRequest $request, Alat $alat): RedirectResponse
     {
-        // TODO (setelah tabel peminjaman ada): jumlah_total tidak boleh di bawah unit yang sedang dipinjam (aturan A5).
+        // Aturan A5 (jumlah_total >= unit yang sedang dipinjam) divalidasi di AlatRequest.
         $alat->update($request->validated());
 
         return redirect()
@@ -66,7 +66,13 @@ class AlatController extends Controller
 
     public function destroy(Alat $alat): RedirectResponse
     {
-        // TODO (setelah tabel peminjaman ada): tolak penghapusan jika alat punya riwayat peminjaman (aturan A4).
+        // Aturan A4: alat yang punya riwayat peminjaman tidak boleh dihapus.
+        if ($alat->peminjaman()->exists()) {
+            return redirect()
+                ->route('admin.alat.index')
+                ->with('error', "Alat {$alat->nama} ({$alat->kode}) tidak dapat dihapus karena memiliki riwayat peminjaman. Ubah kondisi atau jumlahnya bila alat tidak lagi dipakai.");
+        }
+
         $alat->delete();
 
         return redirect()

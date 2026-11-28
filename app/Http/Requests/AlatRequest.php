@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Alat;
+use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -32,7 +33,23 @@ class AlatRequest extends FormRequest
             // Saat ubah, route('alat') berisi model yang sedang diubah sehingga kodenya sendiri diabaikan.
             'kode' => ['required', 'string', 'max:20', 'alpha_dash:ascii', Rule::unique('alat', 'kode')->ignore($this->route('alat'))],
             'kategori' => ['required', 'string', 'max:50'],
-            'jumlah_total' => ['required', 'integer', 'min:1', 'max:1000'],
+            'jumlah_total' => [
+                'required', 'integer', 'min:1', 'max:1000',
+                // Aturan A5 (hanya saat ubah): tidak boleh di bawah unit yang sedang dipinjam.
+                function (string $attribute, mixed $value, Closure $fail): void {
+                    $alat = $this->route('alat');
+
+                    if (! $alat instanceof Alat || ! is_numeric($value)) {
+                        return;
+                    }
+
+                    $dipinjam = $alat->jumlahSedangDipinjam();
+
+                    if ((int) $value < $dipinjam) {
+                        $fail("Jumlah tidak boleh kurang dari unit yang sedang dipinjam ({$dipinjam} unit).");
+                    }
+                },
+            ],
             'kondisi' => ['required', Rule::in(array_keys(Alat::DAFTAR_KONDISI))],
         ];
     }
